@@ -1,0 +1,7 @@
+{
+  "name": "ionic-droid-blaster",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
