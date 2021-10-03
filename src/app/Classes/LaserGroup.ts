@@ -22,8 +22,8 @@ export default class LaserGroup extends Phaser.Physics.Arcade.Group
 			laser.fire(x, y);
 			laser.anims.play('laser');
 
-			if(laser.body instanceof Phaser.Physics.Arcade.Body)
-        		laser.body.setCollideWorldBounds(true, 1, 1, true);
+			// if(laser.body instanceof Phaser.Physics.Arcade.Body)
+        	// 	laser.body.setCollideWorldBounds(true, 1, 1, true);
 		}
 	}
  
@@ -46,7 +46,7 @@ class Laser extends Phaser.Physics.Arcade.Sprite {
     preUpdate(time, delta) {
 		super.preUpdate(time, delta);
  
-		if (this.y <= 0) {
+		if (this.x <= 0 || this.y <= 0) {
 			this.setActive(false);
 			this.setVisible(false);
 		}
