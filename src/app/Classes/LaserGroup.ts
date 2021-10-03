@@ -21,9 +21,6 @@ export default class LaserGroup extends Phaser.Physics.Arcade.Group
 		if (laser) {
 			laser.fire(x, y);
 			laser.anims.play('laser');
-
-			// if(laser.body instanceof Phaser.Physics.Arcade.Body)
-        	// 	laser.body.setCollideWorldBounds(true, 1, 1, true);
 		}
 	}
  

@@ -435,13 +435,6 @@ export default class FirstScene extends Phaser.Scene {
         }
     }
 
-    //event when things go out of bounds, cleanup mostly
-    // onWorldBounds(body) {
-    //     console.log(body);
-        
-    //     body.gameObject.destroy();
-    // }
-
     hitTurret(laser, turret) {
         this.scoreValue += 100; //turrets are worth 100 pts TODO make variable based on level(?)
         this.scoreText.setText(this.scoreValue.toString());
@@ -470,18 +463,8 @@ export default class FirstScene extends Phaser.Scene {
         Phaser.Actions.Call(this.turretGroup.getChildren(), turret => {
             //add turret laser fire
             if (turret instanceof Phaser.Physics.Arcade.Sprite) {
-
                 this.turretLaserGroup.fireLaser(turret.x + 20, turret.y);
                 this.laserTurretCollider = this.physics.add.collider(this.turretLaserGroup.getFirstDead(false), this.shipContainer, this.hitShip, null, this);
-                // this.turretShipCollider = this.physics.add.collider(turretLaser, this.shipContainer, this.hitShip, null, this);
-
-                
-                // const turretLaser = this.physics.add.sprite(turret.x, turret.y, 'turretLaser');
-                // turretLaser.anims.play('turretLaser');
-                // turretLaser.body.setVelocityX(-550);
-                // turretLaser.body.setCollideWorldBounds(true, 1, 1, true);
-
-                // //add collider for laser with turretGroup
             }
         }, this);
     }

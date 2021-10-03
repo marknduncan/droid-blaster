@@ -21,9 +21,6 @@ export default class TurretLaserGroup extends Phaser.Physics.Arcade.Group
 		if (laser) {
 			laser.fire(x, y);
 			laser.anims.play('turretLaser');
-
-			// if(laser.body instanceof Phaser.Physics.Arcade.Body)
-        	// 	laser.body.setCollideWorldBounds(true);
 		}
 	}
  
