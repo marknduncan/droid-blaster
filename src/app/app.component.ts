@@ -6,6 +6,9 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import Phaser from 'phaser';
 
+//scenes
+import FirstScene from './Scenes/FirstScene';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -15,7 +18,7 @@ import Phaser from 'phaser';
 export class AppComponent {
 
   phaserGame: Phaser.Game;
-  phaserConfig: Phaser.Types.Core.GameConfig;
+  config: Phaser.Types.Core.GameConfig;
 
   constructor(
     private platform: Platform,
@@ -35,29 +38,30 @@ export class AppComponent {
     });
   }
 
-  initializePhaser(){
-    this.phaserConfig = {
+  initializePhaser() {
+
+    this.config = {
       type: Phaser.AUTO,
-      width: 1200,
-      height: 600,
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 1200,
+        height: 600
+      },
       physics: {
-          default: 'arcade',
-          arcade: {
-              gravity: { y: 0 },
-              debug: false
-          }
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
+          debug: false
+        }
       },
       audio: {
-          disableWebAudio: true,
-          noAudio: false
-      }
+        disableWebAudio: true,
+        noAudio: false
+      },
+      scene: [FirstScene]
     };
-      // },
-      // scene: {
-      //     preload: preload,
-      //     create: create,
-      //     update: update
-      // }};
-    this.phaserGame = new Phaser.Game(this.phaserConfig);
+
+    this.phaserGame = new Phaser.Game(this.config);
   }
 }
