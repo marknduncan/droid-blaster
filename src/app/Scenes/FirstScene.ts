@@ -42,6 +42,7 @@ export default class FirstScene extends Phaser.Scene {
     inputKeys: Phaser.Input.Keyboard.Key[];
     laserGroup: LaserGroup;
     turretLaserGroup: TurretLaserGroup;
+    heartCamera: Phaser.Cameras.Scene2D.Camera;
 
     constructor(config) {
         super(config);
@@ -84,12 +85,13 @@ export default class FirstScene extends Phaser.Scene {
     create() {
 
         this.inputKeys = [
-			this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
-			this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER),
-		];
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER),
+        ];
 
         //add the main camera
         this.camera = this.cameras.add();
+        this.heartCamera = this.cameras.add(0, 0, 400, 50, false, 'hearts');
         //add and play the main music
         this.music = this.sound.add('overview');
         //loop the music
@@ -105,7 +107,7 @@ export default class FirstScene extends Phaser.Scene {
         //add score
         this.scoreTextLabel = this.add.text(40, this.camera.height - 80, 'Score', { fontSize: '24px', color: '#fff' });
         this.scoreText = this.add.text(40, this.camera.height - 50, this.scoreValue.toString(), { fontSize: '20px', color: '#fff' });
-        
+
         //display level
         this.levelTextLabel = this.add.text(this.camera.width - 150, this.camera.height - 80, 'Level', { fontSize: '24px', color: '#fff' });
         this.levelText = this.add.text(this.camera.width - 150, this.camera.height - 50, this.levelValue.toString(), { fontSize: '20px', color: '#fff' });
@@ -115,12 +117,11 @@ export default class FirstScene extends Phaser.Scene {
             x: this.camera.width / 3,
             y: 0,
         });
-        
+
         this.physics.add.existing(this.boundingBoxGraphic, true);
-        if(this.boundingBoxGraphic.body instanceof Phaser.Physics.Arcade.StaticBody)
-        {
+        if (this.boundingBoxGraphic.body instanceof Phaser.Physics.Arcade.StaticBody) {
             this.boundingBoxGraphic.body.setSize(100, this.camera.height);
-            this.boundingBoxGraphic.body.setOffset(this.camera.width/2.5, 0);
+            this.boundingBoxGraphic.body.setOffset(this.camera.width / 2.5, 0);
         }
 
         //add world bounds listener
@@ -197,12 +198,12 @@ export default class FirstScene extends Phaser.Scene {
 
         //add turrets to scene, frameQuantity is number to spawn
         var turretsToSpawn = this.levelValue * 2;
-    
+
         this.turretGroup = this.physics.add.group({ key: 'fturret', frameQuantity: turretsToSpawn });
         this.physics.world.enable(this.turretGroup); //enable physics on the turretGroup
 
         Phaser.Actions.Call(this.turretGroup.getChildren(), turret => {
-           
+
             if (turret.body instanceof Phaser.Physics.Arcade.Body) {
 
                 turret.body.setVelocity(Phaser.Math.Between(100, 375), Phaser.Math.Between(200, 300)).setBounce(1, 1).setCollideWorldBounds(true);
@@ -217,7 +218,7 @@ export default class FirstScene extends Phaser.Scene {
 
             //add collider to turrets and boundary box
             this.physics.add.collider(turret, this.boundingBoxGraphic, this.hitBoundingBox, null, this);
-        },this);
+        }, this);
 
         //create ship container
         this.ship = this.add.image(0, 0, 'ship');
@@ -234,7 +235,7 @@ export default class FirstScene extends Phaser.Scene {
         this.shipContainer.setSize(25, 25);
         this.physics.world.enable(this.shipContainer); //enable physics on the shipContainer so we can move it around
 
-        if(this.shipContainer.body instanceof Phaser.Physics.Arcade.Body){
+        if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
             this.shipContainer.body.setCollideWorldBounds(true);
         }
 
@@ -376,7 +377,7 @@ export default class FirstScene extends Phaser.Scene {
                     this.shootLaser();
                 }
             });
-       
+
             if (this.cursors.up.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityY(-400);
@@ -473,6 +474,7 @@ export default class FirstScene extends Phaser.Scene {
 
         var shipHitSound = this.sound.add('shiphit');
         shipHitSound.play();
+        this.heartCamera.shake();
 
         turretLaser.body.setVelocityX(0);
 
