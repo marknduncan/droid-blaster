@@ -1,8 +1,6 @@
-import { Body } from "matter";
-
+import { ThrowStmt } from '@angular/compiler';
 import LaserGroup from '../Classes/LaserGroup';
 import TurretLaserGroup from '../Classes/TurretLaserGroup';
-
 
 export default class FirstScene extends Phaser.Scene {
 
@@ -20,7 +18,6 @@ export default class FirstScene extends Phaser.Scene {
     gameOver: boolean;
     isFiring: boolean;
     shipStatus: string;
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     heart1: Phaser.GameObjects.Sprite;
     heart2: Phaser.GameObjects.Sprite;
     heart3: Phaser.GameObjects.Sprite;
@@ -43,6 +40,11 @@ export default class FirstScene extends Phaser.Scene {
     laserGroup: LaserGroup;
     turretLaserGroup: TurretLaserGroup;
     heartCamera: Phaser.Cameras.Scene2D.Camera;
+    lastCursorDirection: string;
+    cursorDebugText: Phaser.GameObjects.Text;
+    staticXJsPos: any;
+    staticYJsPos: any;
+    cursorKeys: { space: Phaser.Input.Keyboard.Key; up: Phaser.Input.Keyboard.Key; down: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key; };
 
     constructor(config) {
         super(config);
@@ -50,7 +52,6 @@ export default class FirstScene extends Phaser.Scene {
         this.levelValue = 1;
         this.scoreValue = 0;
         this.shipStatus = 'a';
-        this.isFiring = false;
     }
 
     preload() {
@@ -59,8 +60,12 @@ export default class FirstScene extends Phaser.Scene {
         this.load.image('space', 'assets/space.png');
         this.load.image('ship', 'assets/ship.png');
 
+        //virtual control images
+        this.load.image('base', 'assets/base.png');
+        this.load.image('thumb', 'assets/thumb.png');
+
         //preload music
-        this.load.audio('overview', 'assets/Space Heroes.ogg');
+        this.load.audio('overview', ['assets/Space-Heroes.m4a']);
         this.load.audio('laser', 'assets/laser5.wav');
         this.load.audio('explode', 'assets/explode.mp3');
         this.load.audio('shiphit', 'assets/shiphit.wav');
@@ -91,9 +96,15 @@ export default class FirstScene extends Phaser.Scene {
 
         //add the main camera
         this.camera = this.cameras.add();
+
+        this.cursorKeys = this.input.keyboard.createCursorKeys();
+
+        //heart camera
         this.heartCamera = this.cameras.add(0, 0, 400, 50, false, 'hearts');
-        //add and play the main music
+
+        // //add and play the main music
         this.music = this.sound.add('overview');
+
         //loop the music
         this.music.play({
             loop: true
@@ -153,7 +164,7 @@ export default class FirstScene extends Phaser.Scene {
         //add turrets animation
         this.anims.create({
             key: 'turret',
-            frames: this.anims.generateFrameNumbers('fturret', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('fturret', { start: 0, end: 2 }),
             frameRate: 10,
             repeat: -1
         });
@@ -230,7 +241,6 @@ export default class FirstScene extends Phaser.Scene {
         this.laserGroup = new LaserGroup(this);
         this.turretLaserGroup = new TurretLaserGroup(this);
 
-
         this.shipContainer = this.add.container(100, 100, [this.ship, this.thruster]);
         this.shipContainer.setSize(25, 25);
         this.physics.world.enable(this.shipContainer); //enable physics on the shipContainer so we can move it around
@@ -261,7 +271,6 @@ export default class FirstScene extends Phaser.Scene {
             this.heart4.anims.play('heart-full');
         }
         else {
-            // console.log(this.shipHeartHealth1, this.shipHeartHealth2, this.shipHeartHealth3, this.shipHeartHealth4);
             //animate remaining hearts
             if (this.shipHeartHealth1 === 4) {
                 this.heart1.anims.play('heart-full');
@@ -305,7 +314,6 @@ export default class FirstScene extends Phaser.Scene {
             }
 
             //animate remaining hearts
-
             if (this.shipHeartHealth4 === 4) {
                 this.heart4.anims.play('heart-full');
             }
@@ -319,10 +327,6 @@ export default class FirstScene extends Phaser.Scene {
                 this.heart4.destroy();
             }
         }
-
-
-        //add cursor controls
-        this.cursors = this.input.keyboard.createCursorKeys();
 
         //create timers for the turret lasers
         this.time.addEvent({
@@ -339,6 +343,12 @@ export default class FirstScene extends Phaser.Scene {
         this.gameOverBg = this.add.graphics();
         this.gameOverBg.fillStyle(0x000000, 0);
         this.gameOverBg.fillRectShape(this.gameOverRect);
+
+        //listen for click event
+        this.input.on(Phaser.Input.Events.POINTER_UP, function(pointer){
+            // console.log(pointer);
+            this.isFiring = true;
+        }, this);
     }
 
     update() {
@@ -351,7 +361,7 @@ export default class FirstScene extends Phaser.Scene {
                     color: '#fff'
                 });
 
-                if (this.cursors.space.isDown) {
+                if (this.cursorKeys.space.isDown) {
                     this.gameOver = false;
                     this.levelValue = 1;
                     this.scoreValue = 0;
@@ -369,28 +379,35 @@ export default class FirstScene extends Phaser.Scene {
         }
         else { //continue animating the ship
 
-            // Loop over all keys
-            this.inputKeys.forEach(key => {
+            console.log(this.isFiring);
+             // Loop over all keys
+             this.inputKeys.forEach(key => {
                 // If key was just pressed down, shoot the laser. We use JustDown to make sure this only fires once.
-                if (Phaser.Input.Keyboard.JustDown(key)) {
+                if (Phaser.Input.Keyboard.JustDown(key) && !this.isFiring) {
                     // console.log('firing')
                     this.shootLaser();
                 }
             });
 
-            if (this.cursors.up.isDown) {
+            if(this.isFiring){
+                this.shootLaser();
+                this.isFiring = false;
+            }
+
+             // Handle the player moving
+            if (this.cursorKeys.up.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityY(-400);
                 }
-            } else if (this.cursors.down.isDown) {
+            } else if (this.cursorKeys.down.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityY(400);
                 }
-            } else if (this.cursors.left.isDown) {
+            } else if (this.cursorKeys.left.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityX(-400);
                 }
-            } else if (this.cursors.right.isDown) {
+            } else if (this.cursorKeys.right.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityX(400);
                 }
@@ -411,7 +428,7 @@ export default class FirstScene extends Phaser.Scene {
             //animate the thruster
             this.thruster.anims.play('thrust', true);
             //animate the background based on the camera position/ship position
-            this.spaceTile.tilePositionX += 5;
+            this.spaceTile.tilePositionX += 6;
         }
 
 

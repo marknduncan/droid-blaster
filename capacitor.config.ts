@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'marknduncan.com.app.droidblaster',
   appName: 'ionic-droid-blaster',
   webDir: 'www',
   bundledWebRuntime: false

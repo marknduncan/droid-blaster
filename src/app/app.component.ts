@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
+import Phaser, { CANVAS } from 'phaser';
 
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-
-import Phaser from 'phaser';
+// import { SplashScreenPlugin } from '@capacitor/splash-screen';
+// import { StatusBarPlugin } from '@capacitor/status-bar';
+// import { Style } from '@capacitor/status-bar';
 
 //scenes
 import FirstScene from './Scenes/FirstScene';
@@ -22,16 +22,16 @@ export class AppComponent {
 
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    // private splashScreen: SplashScreenPlugin,
+    // private statusBar: StatusBarPlugin
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      // this.statusBar.setStyle({ style: Style.Default });
+      // this.splashScreen.hide();
 
       //initialize phaser
       this.initializePhaser();
@@ -41,9 +41,9 @@ export class AppComponent {
   initializePhaser() {
 
     this.config = {
-      type: Phaser.AUTO,
+      type: Phaser.CANVAS,
       scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 1200,
         height: 600
@@ -63,5 +63,6 @@ export class AppComponent {
     };
 
     this.phaserGame = new Phaser.Game(this.config);
+
   }
 }
