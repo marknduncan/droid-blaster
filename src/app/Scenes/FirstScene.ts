@@ -358,9 +358,9 @@ export default class FirstScene extends Phaser.Scene {
         this.virtualJoystick = new VirtualJoystick(this, {
             x: 150,
             y: this.camera.height - 200,
-            radius: 64,
-            base: this.add.image(0, 0, 'base').setDisplaySize(110, 110),
-            thumb: this.add.image(0, 0, 'thumb').setDisplaySize(48, 48),
+            radius: 125,
+            base: this.add.image(0, 0, 'base').setDisplaySize(125, 125),
+            thumb: this.add.image(0, 0, 'thumb').setDisplaySize(60, 60),
             dir: '4dir',
             forceMin: 16,
             fixed: true,
@@ -375,12 +375,12 @@ export default class FirstScene extends Phaser.Scene {
         if (this.gameOver) { //turrets win, show game over menu and restart scene
 
             if (this.shipStatus == 'd') {
-                this.add.text(50, this.camera.height - 300, 'GAME OVER! Press the space key to play again.', {
+                this.add.text(50, this.camera.height - 300, 'GAME OVER! Tap or press SPACE to play again.', {
                     fontSize: '32px',
                     color: '#fff'
                 });
 
-                if (this.cursorKeys.space.isDown) {
+                if (this.cursorKeys.space.isDown || this.isFiring) {
                     this.gameOver = false;
                     this.levelValue = 1;
                     this.scoreValue = 0;
