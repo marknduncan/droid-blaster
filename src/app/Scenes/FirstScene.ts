@@ -2,6 +2,8 @@ import { ThrowStmt } from '@angular/compiler';
 import LaserGroup from '../Classes/LaserGroup';
 import TurretLaserGroup from '../Classes/TurretLaserGroup';
 
+import VirtualJoystick from 'phaser3-rex-plugins/plugins/virtualjoystick.js';
+
 export default class FirstScene extends Phaser.Scene {
 
     spaceTile: Phaser.GameObjects.TileSprite;
@@ -44,7 +46,9 @@ export default class FirstScene extends Phaser.Scene {
     cursorDebugText: Phaser.GameObjects.Text;
     staticXJsPos: any;
     staticYJsPos: any;
+    virtualJoystick: VirtualJoystick;
     cursorKeys: { space: Phaser.Input.Keyboard.Key; up: Phaser.Input.Keyboard.Key; down: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key; };
+    joystickCursorKeys: { up: Phaser.Input.Keyboard.Key; down: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key; };
 
     constructor(config) {
         super(config);
@@ -349,6 +353,21 @@ export default class FirstScene extends Phaser.Scene {
             // console.log(pointer);
             this.isFiring = true;
         }, this);
+
+        //virtualjoystick code
+        this.virtualJoystick = new VirtualJoystick(this, {
+            x: 150,
+            y: this.camera.height - 200,
+            radius: 64,
+            base: this.add.image(0, 0, 'base').setDisplaySize(110, 110),
+            thumb: this.add.image(0, 0, 'thumb').setDisplaySize(48, 48),
+            dir: '4dir',
+            forceMin: 16,
+            fixed: true,
+            enable: true
+        });
+
+        this.joystickCursorKeys = this.virtualJoystick.createCursorKeys();
     }
 
     update() {
@@ -370,7 +389,6 @@ export default class FirstScene extends Phaser.Scene {
                 }
             }
             else { //no more turrets, player wins, advance level and reset gameOver flag, reset scene
-
                 this.gameOver = false;
                 this.levelValue++;
                 this.scene.restart();
@@ -379,35 +397,34 @@ export default class FirstScene extends Phaser.Scene {
         }
         else { //continue animating the ship
 
-            console.log(this.isFiring);
              // Loop over all keys
              this.inputKeys.forEach(key => {
                 // If key was just pressed down, shoot the laser. We use JustDown to make sure this only fires once.
                 if (Phaser.Input.Keyboard.JustDown(key) && !this.isFiring) {
-                    // console.log('firing')
                     this.shootLaser();
                 }
             });
 
+            //handle pointer events
             if(this.isFiring){
                 this.shootLaser();
                 this.isFiring = false;
             }
 
              // Handle the player moving
-            if (this.cursorKeys.up.isDown) {
+            if (this.cursorKeys.up.isDown || this.joystickCursorKeys.up.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityY(-400);
                 }
-            } else if (this.cursorKeys.down.isDown) {
+            } else if (this.cursorKeys.down.isDown || this.joystickCursorKeys.down.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityY(400);
                 }
-            } else if (this.cursorKeys.left.isDown) {
+            } else if (this.cursorKeys.left.isDown || this.joystickCursorKeys.left.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityX(-400);
                 }
-            } else if (this.cursorKeys.right.isDown) {
+            } else if (this.cursorKeys.right.isDown || this.joystickCursorKeys.right.isDown) {
                 if (this.shipContainer.body instanceof Phaser.Physics.Arcade.Body) {
                     this.shipContainer.body.setVelocityX(400);
                 }

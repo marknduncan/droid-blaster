@@ -6,6 +6,8 @@ import Phaser, { CANVAS } from 'phaser';
 // import { StatusBarPlugin } from '@capacitor/status-bar';
 // import { Style } from '@capacitor/status-bar';
 
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
+
 //scenes
 import FirstScene from './Scenes/FirstScene';
 
@@ -58,6 +60,13 @@ export class AppComponent {
       audio: {
         disableWebAudio: true,
         noAudio: false
+      },
+      plugins: {
+        global: [{
+            key: 'rexVirtualJoystick',
+            plugin: VirtualJoystickPlugin,
+            start: true
+        }]
       },
       scene: [FirstScene]
     };
