@@ -11,15 +11,12 @@
       "schematics": {},
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": {
-              "base": "www"
-            },
+            "outputPath": "www",
             "index": "src/index.html",
-            "polyfills": [
-              "src/polyfills.ts"
-            ],
+            "main": "src/main.ts",  // Updated this line from "browser" to "main"
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -35,12 +32,11 @@
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
             "scripts": [],
-            "aot": false,
+            "aot": true,
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true,
-            "browser": "src/main.ts"
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -78,8 +74,7 @@
             "production": {
               "buildTarget": "app:build:production"
             },
-            "ci": {
-            }
+            "ci": {}
           }
         },
         "extract-i18n": {
@@ -127,7 +122,7 @@
           }
         },
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@angular-devkit/build-angular:protractor",  // This might need to be adjusted based on your version of Protractor
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
             "devServerTarget": "app:serve"
