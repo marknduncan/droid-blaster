@@ -1,2 +1,2 @@
 # droid-blaster
-Side scrolling space shooter game, written in Angular/TS + Ionic + PhaserJS
+Side scrolling space shooter game, written in Angular/TypeScript + Capacitor (Ionic) + Phaser.
